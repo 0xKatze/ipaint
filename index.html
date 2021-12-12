@@ -1,42 +1,77 @@
+<head>
+    <link rel="stylesheet" href="mystyle.css">
+</head>
+
 <body>
-    <canvas id="draw" width="800" height="800"></canvas>
-</body> 
+    <div id="sketch">
+        <canvas id="paint"></canvas>
+    </div>
+
+    <div id="settings"> color
+        <button onclick="getColor('blue');">藍色</button>
+        <button onclick="getColor('red');">紅色</button>
+        <button onclick="getColor('green');">綠色</button>
+        <button onclick="getColor('white');">白色</button>
+        <button onclick="getColor('#333333');">橡皮擦</button>
+    </div>
+
+    <div id="settings"> Brush Size
+        <button onclick="getSize('2');">細</button>
+        <button onclick="getSize('5');">粗</button>
+        <button onclick="getSize('10');">滿粗的</button>
+        <button onclick="getSize('20');">超粗的</button>
+    </div>
+</body>
 
 <script>
-    const canvas = document.querySelector('#draw')
-    const ctx = canvas.getContext('2d')
-    //將畫布設至為視窗大小
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-    //設置畫筆的粗度以及形狀
-    ctx.lineJoin = 'round'
-    ctx.lineCap = 'round'
-    ctx.lineWidth = 25;
-    //設置flag以及起始座標
-    let isDrawing = false;
-    let lastX = 0;
-    let lastY = 0;
-    //色彩設置
-    let hue = 0
+    var canvas = document.getElementById('paint');
+    var ctx = canvas.getContext('2d');
 
+    var sketch = document.getElementById('sketch');
+    var sketch_style = getComputedStyle(sketch);
+    canvas.width = 500;
+    canvas.height = 250;
 
-    function draw(e) {
-        if (!isDrawing) return;
-        ctx.strokeStyle = `hsl(${hue},100%,50%)`
-        ctx.beginPath()
-        ctx.moveTo(lastX, lastY)
-        ctx.lineTo(e.offsetX, e.offsetY)
-        ctx.stroke();
-        [lastX, lastY] = [e.offsetX, e.offsetY]
-        hue <= 360 ? hue++ : hue = 0;
+    var mouse = {
+        x: 0,
+        y: 0
+    };
+
+    /* Mouse Capturing Work */
+    canvas.addEventListener('mousemove', function (e) {
+        mouse.x = e.pageX - this.offsetLeft;
+        mouse.y = e.pageY - this.offsetTop;
+    }, false);
+
+    /* Drawing on Paint App */
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    ctx.strokeStyle = "red";
+
+    function getColor(colour) {
+        ctx.strokeStyle = colour;
     }
 
-    canvas.addEventListener('mousedown', (e) => {
-        isDrawing = true;
-        [lastX, lastY] = [e.offsetX, e.offsetY]
-    });
-    canvas.addEventListener('mousemove', draw)
-    canvas.addEventListener('mousedown', () => isDrawing = true)
-    canvas.addEventListener('mouseup', () => isDrawing = false)
-    canvas.addEventListener('mouseout', () => isDrawing = false)
+    function getSize(size) {
+        ctx.lineWidth = size;
+    }
+
+
+    canvas.addEventListener('mousedown', function (e) {
+        ctx.beginPath();
+        ctx.moveTo(mouse.x, mouse.y);
+
+        canvas.addEventListener('mousemove', onPaint, false);
+    }, false);
+
+    canvas.addEventListener('mouseup', function () {
+        canvas.removeEventListener('mousemove', onPaint, false);
+    }, false);
+
+    var onPaint = function () {
+        ctx.lineTo(mouse.x, mouse.y);
+        ctx.stroke();
+    };
+    F
 </script>
