@@ -1,0 +1,42 @@
+<body>
+    <canvas id="draw" width="800" height="800"></canvas>
+</body> 
+
+<script>
+    const canvas = document.querySelector('#draw')
+    const ctx = canvas.getContext('2d')
+    //將畫布設至為視窗大小
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    //設置畫筆的粗度以及形狀
+    ctx.lineJoin = 'round'
+    ctx.lineCap = 'round'
+    ctx.lineWidth = 25;
+    //設置flag以及起始座標
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    //色彩設置
+    let hue = 0
+
+
+    function draw(e) {
+        if (!isDrawing) return;
+        ctx.strokeStyle = `hsl(${hue},100%,50%)`
+        ctx.beginPath()
+        ctx.moveTo(lastX, lastY)
+        ctx.lineTo(e.offsetX, e.offsetY)
+        ctx.stroke();
+        [lastX, lastY] = [e.offsetX, e.offsetY]
+        hue <= 360 ? hue++ : hue = 0;
+    }
+
+    canvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        [lastX, lastY] = [e.offsetX, e.offsetY]
+    });
+    canvas.addEventListener('mousemove', draw)
+    canvas.addEventListener('mousedown', () => isDrawing = true)
+    canvas.addEventListener('mouseup', () => isDrawing = false)
+    canvas.addEventListener('mouseout', () => isDrawing = false)
+</script>
